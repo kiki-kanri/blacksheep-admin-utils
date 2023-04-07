@@ -19,7 +19,7 @@ class Vercode:
     image_size = (image_width, image_height)
     vercode_length = 4
 
-    font = ImageFont.truetype('./static/arial.ttf', size=font_size)
+    font = ImageFont.truetype(font_path, size=font_size)
     font_base_x = (image_width - font_size * 4) / 2
     font_base_y = (image_height - font_size) / 2
     font_pos = []
