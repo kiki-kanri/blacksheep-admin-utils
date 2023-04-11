@@ -44,9 +44,9 @@ class BaseAPIController(APIController):
         data['id'] = str(model.id)
         return dict_key_snake_to_camel(data)
 
-    async def models_to_data(self, models: FindMany[ModelType]):
+    async def models_to_data(self, count: int, models: FindMany[ModelType]):
         return {
-            'count': await models.count(),
+            'count': count,
             'data': [
                 await self.model_to_dict(model)
                 async for model in models
@@ -73,7 +73,7 @@ class BaseAPIController(APIController):
             with_children=with_children
         )
 
-        return await self.models_to_data(models)
+        return await self.models_to_data(await self.model.count(), models)
 
     async def save(self, data: dict, id: str = ''):
         await self.model.update_or_create(id, **data)
