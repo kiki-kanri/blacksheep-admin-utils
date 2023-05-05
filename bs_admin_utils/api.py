@@ -1,4 +1,4 @@
-from asyncio import get_running_loop
+from asyncio import create_task, get_running_loop, wait
 from beanie.odm.queries.find import FindMany
 from blacksheep import file, Request
 from blacksheep.server.controllers import APIController, delete, get, patch, post, put, ws
@@ -45,12 +45,14 @@ class BaseAPIController(APIController):
         return dict_key_snake_to_camel(data)
 
     async def models_to_data(self, count: int, models: FindMany[ModelType]):
+        tasks = [create_task(self.model_to_dict(model)) async for model in models]
+
+        if tasks:
+            await wait(tasks)
+
         return {
             'count': count,
-            'data': [
-                await self.model_to_dict(model)
-                async for model in models
-            ]
+            'data': [task.result() for task in tasks]
         }
 
     async def process_data(self, data: dict[str], model: ModelType):
