@@ -22,8 +22,8 @@ class BaseAPIController(APIController):
     loop = get_running_loop()
     model: ModelType
     success = 'success'
-    to_dict_excludes = {}
-    to_dict_includes = {}
+    to_dict_excludes: set[str] = set()
+    to_dict_includes: set[str] = set()
 
     # Data process and route url
 
@@ -31,13 +31,19 @@ class BaseAPIController(APIController):
     def route(cls):
         return cls.base_url
 
-    async def model_to_dict(self, model: ModelType, is_link: bool = False):
+    async def model_to_dict(
+        self,
+        model: ModelType,
+        is_link: bool = False,
+        excludes: Optional[set[str]] = None,
+        includes: Optional[set[str]] = None
+    ):
         if is_link:
             model = await model.fetch()
 
         data = model.dict(
-            exclude=self.to_dict_excludes or None,
-            include=self.to_dict_includes or None
+            exclude=excludes or self.to_dict_excludes or None,
+            include=includes or self.to_dict_includes or None
         )
 
         await self.process_data(data, model)
