@@ -90,7 +90,7 @@ class BaseAPIController(APIController):
             kwargs['with_children'] = with_children
 
         models = (find_many or self.model).find(**kwargs)
-        return await self.models_to_data(await self.model.count(), models)
+        return await self.models_to_data(await models.count(), models)
 
     async def save(self, data: dict, id: str = ''):
         await self.model.update_or_create(id, **data)
