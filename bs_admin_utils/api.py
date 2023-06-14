@@ -72,9 +72,15 @@ class BaseAPIController(APIController):
             return self.success
         return self.not_found()
 
-    async def get_list(self, rq: Request, fetch_links: bool = True, with_children: bool = True):
+    async def get_list(
+        self,
+        rq: Request,
+        fetch_links: bool = True,
+        with_children: bool = True,
+        find_many: Optional[FindMany[ModelType]] = None
+    ):
         skip, limit = get_data_range(rq)
-        models = self.model.find(
+        models = (find_many or self.model).find(
             fetch_links=fetch_links,
             limit=limit,
             skip=skip,
