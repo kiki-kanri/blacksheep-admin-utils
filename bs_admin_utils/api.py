@@ -77,16 +77,19 @@ class BaseAPIController(APIController):
         rq: Request,
         fetch_links: bool = True,
         with_children: bool = True,
-        find_many: Optional[FindMany[ModelType]] = None
+        find_many: Optional[FindMany] = None
     ):
         skip, limit = get_data_range(rq)
-        models = (find_many or self.model).find(
-            fetch_links=fetch_links,
-            limit=limit,
-            skip=skip,
-            with_children=with_children
-        )
+        kwargs = {
+            'fetch_links': fetch_links,
+            'limit': limit,
+            'skip': skip
+        }
 
+        if find_many is None:
+            kwargs['with_children'] = with_children
+
+        models = (find_many or self.model).find(**kwargs)
         return await self.models_to_data(await self.model.count(), models)
 
     async def save(self, data: dict, id: str = ''):
