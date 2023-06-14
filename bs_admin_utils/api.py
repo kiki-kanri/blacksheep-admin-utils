@@ -70,7 +70,7 @@ class BaseAPIController(APIController):
         if model := await self.model.from_id(id):
             await model.delete()
             return self.success
-        return self.error()
+        return self.not_found()
 
     async def get_list(self, rq: Request, fetch_links: bool = True, with_children: bool = True):
         skip, limit = get_data_range(rq)
