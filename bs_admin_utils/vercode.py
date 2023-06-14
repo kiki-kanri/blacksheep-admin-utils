@@ -8,7 +8,7 @@ from random import choice, randint
 fonts_dir_path = Path(__file__).resolve().parent / 'static'
 font_paths = [
     str(fonts_dir_path / 'arial.ttf'),
-    str(fonts_dir_path / 'nstc.ttf')
+    # str(fonts_dir_path / 'nstc.ttf')
 ]
 
 font_size = 32
