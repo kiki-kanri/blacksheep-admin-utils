@@ -12,7 +12,7 @@ setup(
     },
     include_package_data=True,
     zip_safe=True,
-    version='1.0.5',
+    version='1.0.6',
     description='Blacksheep admin backend utils classes and function.',
     author='kiki-kanri',
     author_email='a470666@gmail.com',

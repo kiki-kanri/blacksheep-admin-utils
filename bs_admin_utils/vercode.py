@@ -5,21 +5,29 @@ from PIL import Image, ImageDraw, ImageFont
 from random import choice, randint
 
 
-file_path = Path(__file__).resolve()
-font_path = str(file_path.parent / 'static' / 'arial.ttf')
+fonts_dir_path = Path(__file__).resolve().parent / 'static'
+font_paths = [
+    str(fonts_dir_path / 'arial.ttf'),
+    str(fonts_dir_path / 'nstc.ttf')
+]
+
+font_size = 32
 
 
 # Vercode
 
 class Vercode:
     bg_color = (0, 0, 0, 0)
-    font_size = 32
     image_height = 50
     image_width = 150
     image_size = (image_width, image_height)
     vercode_length = 4
 
-    font = ImageFont.truetype(font_path, size=font_size)
+    fonts = [
+        ImageFont.truetype(font_path, size=font_size)
+        for font_path in font_paths
+    ]
+
     font_base_x = (image_width - font_size * 4) / 2
     font_base_y = (image_height - font_size) / 2
     font_pos = []
@@ -67,7 +75,7 @@ class Vercode:
                 cls.font_pos[i],
                 text=random_char,
                 fill=char_color,
-                font=cls.font
+                font=choice(cls.fonts)
             )
 
         cls.draw_line(draw)
