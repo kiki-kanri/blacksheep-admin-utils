@@ -72,25 +72,16 @@ class BaseAPIController(APIController):
             return self.success
         return self.not_found()
 
-    async def get_list(
-        self,
-        rq: Request,
-        fetch_links: bool = True,
-        with_children: bool = True,
-        find_many: Optional[FindMany] = None
-    ):
+    async def get_list(self, rq: Request, fetch_links: bool = True, with_children: bool = True):
         skip, limit = get_data_range(rq)
-        kwargs = {
-            'fetch_links': fetch_links,
-            'limit': limit,
-            'skip': skip
-        }
+        models = self.model.find(
+            fetch_links=fetch_links,
+            limit=limit,
+            skip=skip,
+            with_children=with_children
+        )
 
-        if find_many is None:
-            kwargs['with_children'] = with_children
-
-        models = (find_many or self.model).find(**kwargs)
-        return await self.models_to_data(await models.count(), models)
+        return await self.models_to_data(await self.model.count(), models)
 
     async def save(self, data: dict, id: str = ''):
         await self.model.update_or_create(id, **data)
