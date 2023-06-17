@@ -24,6 +24,10 @@ class BaseModel(Document):
             return model, False
         return await cls.create(**kwargs), True
 
+    @property
+    def strid(self):
+        return str(self.id)
+
     async def update_doc(self, **kwargs):
         for key, value in kwargs.items():
             setattr(self, key, value)
