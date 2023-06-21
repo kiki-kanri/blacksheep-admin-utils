@@ -66,7 +66,7 @@ class BaseAPIController(APIController):
 
     # Apis
 
-    async def delete(self, id: str):
+    async def delete_data(self, id: str):
         if model := await self.model.from_id(id):
             await model.delete()
             return self.success
@@ -82,10 +82,6 @@ class BaseAPIController(APIController):
         )
 
         return await self.models_to_data(await self.model.count(), models)
-
-    async def save(self, data: dict, id: str = ''):
-        await self.model.update_or_create(id, **data)
-        return self.success
 
     # Response
 
