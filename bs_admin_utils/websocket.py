@@ -1,7 +1,8 @@
 from asyncio import create_task
 from blacksheep import WebSocket
 from kikiutils.json import odumps, oloads
-from typing import Callable, Coroutine
+from kikiutils.typehint import P, T
+from typing import Any, Callable, Coroutine
 
 
 class WebsocketConnection:
@@ -37,17 +38,13 @@ class Websockets:
 
     async def _listen(self, connection: WebsocketConnection):
         while True:
-            data = await connection.ws.receive_text()
-
-            if data == '':
+            if (data := await connection.ws.receive_text()) == '':
                 continue
 
             event, args, kwargs = oloads(data)
 
-            if event in self.event_handlers:
-                create_task(
-                    self.event_handlers[event](connection, *args, **kwargs)
-                )
+            if handler := self.event_handlers.get(event):
+                create_task(handler(connection, *args, **kwargs))
 
     async def accept_and_listen(self, user_code: str, websocket: WebSocket):
         await websocket.accept()
@@ -82,7 +79,9 @@ class Websockets:
                 await c.ws.send_bytes(data)
 
     def on(self, event: str):
-        def decorator(view_func):
+        """Register event handler."""
+
+        def decorator(view_func: Callable[P, Coroutine[Any, Any, T]]):
             self.event_handlers[event] = view_func
             return view_func
         return decorator
