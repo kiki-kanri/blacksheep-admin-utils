@@ -25,9 +25,7 @@ class Websockets:
         self.event_handlers: dict[str, Callable[..., Coroutine]] = {}
 
     def _add_connection(self, user_code: str, connection: WebsocketConnection):
-        if user_code not in self.connections:
-            self.connections[user_code] = {}
-        self.connections[user_code][connection.code] = connection
+        self.connections.setdefault(user_code, {})[connection.code] = connection
 
     def _del_connection(self, user_code: str, connection: WebsocketConnection):
         if user_code in self.connections:
