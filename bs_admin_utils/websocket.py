@@ -1,8 +1,8 @@
-from asyncio import create_task
+from asyncio import AbstractEventLoop, get_running_loop
 from blacksheep import WebSocket
 from kikiutils.json import odumps, oloads
 from kikiutils.typehint import P, T
-from typing import Any, Callable, Coroutine
+from typing import Any, Callable, Coroutine, Optional
 
 
 class WebsocketConnection:
@@ -20,7 +20,8 @@ class WebsocketConnection:
 
 
 class Websockets:
-    def __init__(self):
+    def __init__(self, loop: Optional[AbstractEventLoop] = None):
+        self._loop = loop or get_running_loop()
         self.connections: dict[str, dict[str, WebsocketConnection]] = {}
         self.event_handlers: dict[str, Callable[..., Coroutine]] = {}
 
@@ -42,7 +43,7 @@ class Websockets:
             event, args, kwargs = oloads(data)
 
             if handler := self.event_handlers.get(event):
-                create_task(handler(connection, *args, **kwargs))
+                self._loop.create_task(handler(connection, *args, **kwargs))
 
     async def accept_and_listen(self, user_code: str, websocket: WebSocket):
         await websocket.accept()
